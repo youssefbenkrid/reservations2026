@@ -10,6 +10,7 @@
 <body>
 <div class="container">
     <div layout:fragment="content">
+        <div id="notification" th:replace="~{layouts/main :: notification}"></div>
         <h2>Nouvel artiste</h2>
 
         <form th:action="@{/artists/create}" th:object="${artist}" th:method="post">

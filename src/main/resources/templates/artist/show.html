@@ -8,6 +8,7 @@
 <body>
 <div class="container">
     <div layout:fragment="content">
+        <div id="notification" th:replace="~{layouts/main :: notification}"></div>
         <h2 th:text="|${artist.firstname}  ${artist.lastname}|">Bob Sull</h2>
 
         <div class="actions">
