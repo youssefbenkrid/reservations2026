@@ -33,17 +33,22 @@ public class SpringSecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/").permitAll();
+                    auth.requestMatchers("/login", "/login**", "/css/**", "/js/**",
+                            "/forgot-password", "/reset-password", "/reset-success").permitAll();
                     auth.requestMatchers("/admin").hasRole("ADMIN");
                     auth.requestMatchers("/user").hasRole("MEMBER");
-                    auth.anyRequest().permitAll();
+                    auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("login")
-                        .failureUrl("/login?loginError=true"))
+                        .failureUrl("/login?loginError=true")
+                        .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logoutSuccess=true")
-                        .deleteCookies("JSESSIONID"))
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login?loginRequired=true")))
                 .build();
