@@ -10,6 +10,7 @@ import be.iccbxl.pid.reservations2026.dto.UserRegistrationDto;
 import be.iccbxl.pid.reservations2026.model.User;
 import be.iccbxl.pid.reservations2026.model.UserRole;
 import be.iccbxl.pid.reservations2026.repository.UserRepository;
+import be.iccbxl.pid.reservations2026.dto.UserProfileDto;
 
 @Service
 public class UserService {
@@ -55,6 +56,23 @@ public class UserService {
         user.setLangue(dto.getLangue());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(UserRole.MEMBER);
+        userRepository.save(user);
+    }
+
+    public void updateUserFromDto(UserProfileDto dto) {
+        User user = userRepository.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        user.setFirstname(dto.getFirstname());
+        user.setLastname(dto.getLastname());
+        user.setEmail(dto.getEmail());
+        user.setLangue(dto.getLangue());
+
+        // Si un nouveau mot de passe est fourni et validé
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
         userRepository.save(user);
     }
 }
