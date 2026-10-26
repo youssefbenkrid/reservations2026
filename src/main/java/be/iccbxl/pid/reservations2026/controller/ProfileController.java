@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @Controller
 public class ProfileController {
@@ -69,5 +73,30 @@ public class ProfileController {
         redirAttrs.addFlashAttribute("successMessage", "Profil mis à jour avec succès !");
 
         return "redirect:profile";
+    }
+
+    @DeleteMapping("/profile/delete")
+    public String deleteAccount(HttpServletRequest request, HttpServletResponse response,
+                                RedirectAttributes redirAttrs) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+
+        if (request.isUserInRole("ADMIN")) {
+            redirAttrs.addFlashAttribute("errorMessage", "Pas de suppression de son propre compte admin !");
+            return "redirect:/profile";
+        }
+
+        // Supprimer l'utilisateur courant
+        userService.deleteByLogin(login);
+
+        // Variante plus Spring-Security "propre"
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        // Effacer le contexte de sécurité
+        SecurityContextHolder.clearContext();
+
+        redirAttrs.addFlashAttribute("successMessage", "Votre compte a été supprimé avec succès.");
+        return "redirect:/";
     }
 }

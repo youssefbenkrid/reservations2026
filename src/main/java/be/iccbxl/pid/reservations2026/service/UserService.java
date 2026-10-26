@@ -75,4 +75,9 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public void deleteByLogin(String login) {
+        User user = userRepository.findByLogin(login);
+        userRepository.delete(user);
+    }
 }
